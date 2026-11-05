@@ -52,4 +52,4 @@ flowchart TD
 
 **Документация:** [Настройка](docs/setup.md) · [Тесты](docs/testing.md) · [Восстановление](docs/recovery.md)
 
-**Автор:** [Alexander Zaytsev](https://github.com/AlexZaytsev-ai). Проект собран и проверен с помощью AI.
+**Связаться:** [Telegram](https://t.me/AlexZcv) · [Портфолио](https://alexzaytsev-ai.github.io/ai-portfolio/)

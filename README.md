@@ -52,4 +52,4 @@ Run both SQL files in `sql/`, import both workflows, assign credentials and repl
 
 **Documentation (Russian):** [Setup](docs/setup.md) · [Tests](docs/testing.md) · [Recovery](docs/recovery.md)
 
-**Author:** [Alexander Zaytsev](https://github.com/AlexZaytsev-ai). Built and tested with AI assistance.
+**Contact:** [Telegram](https://t.me/AlexZcv) · [Portfolio](https://alexzaytsev-ai.github.io/ai-portfolio/)
