@@ -26,6 +26,17 @@ flowchart TD
     E -->|Да| G["Сводка менеджерам и подтверждение"]
 ```
 
+## Скриншоты workflow
+
+[![Основной workflow](docs/images/lead-intake-workflow.jpg)](docs/images/lead-intake-workflow.jpg)
+
+<details>
+<summary>Мониторинг и восстановление</summary>
+
+[![Workflow мониторинга](docs/images/monitoring-workflow.jpg)](docs/images/monitoring-workflow.jpg)
+
+</details>
+
 ## Проверенный результат
 
 Вручную проверены сбор по шагам, неизвестный бюджет, отказ назвать имя, ранняя передача, ответы по знаниям и пересылка дополнений. Итоговый тест завершился статусами `handed_off`, `sent`, `done` и сохранёнными ID сводки и подтверждения.

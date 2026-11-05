@@ -26,6 +26,17 @@ flowchart TD
     E -->|Yes| G["Send summary to managers and confirm"]
 ```
 
+## Workflow screenshots
+
+[![Main workflow](docs/images/lead-intake-workflow.jpg)](docs/images/lead-intake-workflow.jpg)
+
+<details>
+<summary>Monitoring and recovery</summary>
+
+[![Monitoring workflow](docs/images/monitoring-workflow.jpg)](docs/images/monitoring-workflow.jpg)
+
+</details>
+
 ## Verified result
 
 Manual tests covered multi-step collection, unknown budget, name refusal, early handoff, knowledge answers and follow-up forwarding. The final test recorded `handed_off`, `sent`, `done` and both summary and confirmation message IDs.
