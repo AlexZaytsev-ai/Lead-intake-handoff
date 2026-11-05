@@ -11,9 +11,14 @@ Telegram bot that collects apartment renovation requests, answers company questi
 - Collects renovation type, area, city, timing, budget and name; asks for missing details.
 - Hands off when ready or when the customer requests a person. Forwards subsequent messages to the group.
 - Answers from retrieved company information using PostgreSQL full-text search, then continues intake.
-- Saves incoming messages before AI, alerts on stalled processing and restores one inconsistent lead status.
+- Saves incoming messages before AI and alerts on stalled messages and handoffs.
 
-## Flow
+## Workflow
+
+[![Main workflow](docs/images/lead-intake-workflow.jpg)](docs/images/lead-intake-workflow.jpg)
+
+<details>
+<summary>Workflow logic</summary>
 
 ```mermaid
 flowchart TD
@@ -26,9 +31,7 @@ flowchart TD
     E -->|Yes| G["Send summary to managers and confirm"]
 ```
 
-## Workflow screenshots
-
-[![Main workflow](docs/images/lead-intake-workflow.jpg)](docs/images/lead-intake-workflow.jpg)
+</details>
 
 <details>
 <summary>Monitoring and recovery</summary>
@@ -39,12 +42,14 @@ flowchart TD
 
 ## Verified result
 
-Manual tests covered multi-step collection, unknown budget, name refusal, early handoff, knowledge answers and follow-up forwarding. The final test recorded `handed_off`, `sent`, `done` and both summary and confirmation message IDs.
+The bot collected renovation details, answered questions about company terms and delivered a summary and customer confirmation. Manual checks also covered an unknown budget, name refusal, early handoff and forwarding later messages.
 
-**Limits:** one lead per chat, shared group without manager assignment, lexical retrieval during intake only. Ambiguous sends need manual review; automatic redelivery is not implemented. Clean deployment has not been tested.
+**Demo limits:** one lead per chat, shared manager group and lexical retrieval during intake only. Ambiguous deliveries require manual review. Automatic redelivery is not implemented; clean deployment has not been tested.
 
-## Setup
+## Run locally
 
-Run the two files in `sql/`, import both JSON files from `workflows/`, assign credentials and replace chat ID placeholders. [Setup details](docs/setup.md) · [Tests](docs/testing.md) · [Recovery](docs/recovery.md) (Russian).
+Run both SQL files in `sql/`, import both workflows, assign credentials and replace chat ID placeholders.
+
+**Documentation (Russian):** [Setup](docs/setup.md) · [Tests](docs/testing.md) · [Recovery](docs/recovery.md)
 
 **Author:** [Alexander Zaytsev](https://github.com/AlexZaytsev-ai). Built and tested with AI assistance.
