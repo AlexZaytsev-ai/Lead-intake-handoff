@@ -4,7 +4,7 @@
 
 Telegram bot that collects apartment renovation requests, answers company questions and sends a summary to a manager group. Demo for a fictional company.
 
-**Stack:** n8n · Telegram · PostgreSQL · JavaScript · OpenAI · Structured Output Parser
+**Stack:** n8n · Telegram · PostgreSQL · JavaScript · OpenAI · Structured Output Parser · RAG
 
 ## What it does
 
