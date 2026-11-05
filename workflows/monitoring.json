@@ -1,0 +1,209 @@
+{
+  "name": "Lead Intake — контроль сообщений",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -288,
+        -112
+      ],
+      "id": "4f2c0f13-17bd-4b45-9687-59654e956517",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    m.id,\n    m.lead_id,\n    m.text,\n    m.processing_status,\n    m.created_at,\n    h.id AS handoff_id,\n    h.status AS handoff_status,\n    h.telegram_message_id,\n    h.client_confirmation_message_id\nFROM messages AS m\nLEFT JOIN handoffs AS h\n    ON h.source_message_id = m.id\nWHERE m.direction = 'incoming'\n  AND m.processing_status = 'pending'\n  AND m.created_at < NOW() - INTERVAL '5 minutes'\n  AND (\n    m.last_alerted_at IS NULL\n    OR m.last_alerted_at < NOW() - INTERVAL '1 hour'\n  )\nORDER BY m.created_at;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        -80,
+        -112
+      ],
+      "id": "8c636bb7-00f2-49ed-b754-fba04d590076",
+      "name": "Найти необработанные сообщения"
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_ALERT_CHAT_ID",
+        "text": "={{ '⚠️ Lead Intake: сообщение ожидает обработки больше 5 минут.' +\n   '\\nID сообщения в базе: ' + $json.id +\n   '\\nID заявки: ' + $json.lead_id +\n   '\\nТекст: ' + $json.text +\n   '\\n\\nПередача: ' + ($json.handoff_status || 'запись не найдена') +\n   '\\nID сообщения менеджеру: ' + ($json.telegram_message_id || 'не сохранён') +\n   '\\nID подтверждения клиенту: ' + ($json.client_confirmation_message_id || 'не сохранён') +\n   '\\n\\nПроверь выполнение workflow перед повторной отправкой. Отсутствие ID не доказывает, что сообщение не доставлено.' }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        -112
+      ],
+      "id": "88f3cbec-ff7c-41f1-9906-6d661fd63f42",
+      "name": "Сообщить о зависшем сообщении"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE messages\nSET last_alerted_at = NOW()\nWHERE id = $1::bigint\n  AND processing_status = 'pending'\nRETURNING id, processing_status, last_alerted_at;",
+        "options": {
+          "queryReplacement": "={{ [$('Найти необработанные сообщения').item.json.id] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        336,
+        -112
+      ],
+      "id": "7399a2da-3383-4ca7-bcd9-c7a518d487b6",
+      "name": "Запомнить уведомление"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, lead_id, manager_chat_id, status, created_at\nFROM handoffs\nWHERE status = 'pending'\n  AND created_at < NOW() - INTERVAL '5 minutes'\n  AND (\n    last_alerted_at IS NULL\n    OR last_alerted_at < NOW() - INTERVAL '1 hour'\n  )\nORDER BY created_at;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        -80,
+        112
+      ],
+      "id": "22d1b25c-3372-4d09-a110-bd8d7bf8741d",
+      "name": "Найти зависшие передачи"
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_ALERT_CHAT_ID",
+        "text": "={{ '⚠️ Передача заявки ожидает обработки больше 5 минут.\\n' +\n   'ID передачи: ' + $json.id + '\\n' +\n   'ID заявки: ' + $json.lead_id + '\\n\\n' +\n   'Проверь выполнение workflow и чат менеджера перед повторной отправкой.' }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        112
+      ],
+      "id": "0a4735e9-c12d-4f2b-b0f6-98aa6abd8db8",
+      "name": "Сообщить о зависшей передаче"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE handoffs\nSET last_alerted_at = NOW()\nWHERE id = $1::bigint\n  AND status = 'pending'\nRETURNING id, status, last_alerted_at;",
+        "options": {
+          "queryReplacement": "={{ [$('Найти зависшие передачи').item.json.id] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        336,
+        112
+      ],
+      "id": "7d33869f-3b4e-4777-a81d-8f1e7cb0552f",
+      "name": "Запомнить уведомление о передаче"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE leads AS l\nSET\n    status = 'handed_off',\n    last_question_field = NULL,\n    updated_at = NOW()\nWHERE l.status = 'collecting'\n  AND EXISTS (\n    SELECT 1\n    FROM handoffs AS h\n    WHERE h.lead_id = l.id\n      AND h.status = 'sent'\n      AND h.telegram_message_id IS NOT NULL\n      AND h.sent_at < NOW() - INTERVAL '5 minutes'\n  )\nRETURNING l.id, l.status;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        -80,
+        -336
+      ],
+      "id": "c40f3dc8-1197-4b92-9381-20d307d1e9a7",
+      "name": "Восстановить статус переданных заявок"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Найти необработанные сообщения",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Найти зависшие передачи",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Восстановить статус переданных заявок",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Найти необработанные сообщения": {
+      "main": [
+        [
+          {
+            "node": "Сообщить о зависшем сообщении",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Сообщить о зависшем сообщении": {
+      "main": [
+        [
+          {
+            "node": "Запомнить уведомление",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Найти зависшие передачи": {
+      "main": [
+        [
+          {
+            "node": "Сообщить о зависшей передаче",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Сообщить о зависшей передаче": {
+      "main": [
+        [
+          {
+            "node": "Запомнить уведомление о передаче",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  }
+}
