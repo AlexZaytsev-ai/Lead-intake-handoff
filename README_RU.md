@@ -4,7 +4,7 @@
 
 Telegram-бот собирает заявки на ремонт квартир, отвечает на вопросы об условиях и отправляет сводку в группу менеджеров. Демо для вымышленной компании.
 
-**Стек:** n8n · Telegram · PostgreSQL · JavaScript · OpenAI · Structured Output Parser
+**Стек:** n8n · Telegram · PostgreSQL · JavaScript · OpenAI · Structured Output Parser · RAG
 
 ## Что делает
 
