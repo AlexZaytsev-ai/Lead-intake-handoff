@@ -6,6 +6,12 @@ Telegram bot that collects apartment renovation requests, answers company questi
 
 **Stack:** n8n · Telegram · PostgreSQL · JavaScript · OpenAI · Structured Output Parser · RAG
 
+## Demo
+
+**[Watch the demo video](demo/Lead_Intake_Handoff_Demo.mp4)**
+
+The video shows a customer conversation, data collection and lead handoff to a manager.
+
 ## What it does
 
 - Collects renovation type, area, city, timing, budget and name; asks for missing details.
