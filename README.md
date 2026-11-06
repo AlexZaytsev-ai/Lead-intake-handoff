@@ -8,7 +8,7 @@ Telegram bot that collects apartment renovation requests, answers company questi
 
 ## Demo
 
-**[Watch the demo video](demo/Lead_Intake_Handoff_Demo.mp4)**
+https://github.com/user-attachments/assets/66f44f74-8a7d-4aea-ae04-6d8efa9541a6
 
 The video shows a customer conversation, data collection and lead handoff to a manager.
 

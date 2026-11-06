@@ -6,6 +6,12 @@ Telegram-бот собирает заявки на ремонт квартир, 
 
 **Стек:** n8n · Telegram · PostgreSQL · JavaScript · OpenAI · Structured Output Parser · RAG
 
+## Демо
+
+https://github.com/user-attachments/assets/66f44f74-8a7d-4aea-ae04-6d8efa9541a6
+
+Видео показывает диалог с клиентом, сбор данных и передачу заявки менеджеру.
+
 ## Что делает
 
 - Собирает тип ремонта, площадь, город, сроки, бюджет и имя. Уточняет недостающие данные.
